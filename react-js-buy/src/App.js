@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
+import Client from 'shopify-buy';
+
 import Products from './components/Products';
 import Cart from './components/Cart';
 
 function App(props){
+
+  const client = Client.buildClient({
+    storefrontAccessToken: 'dd4d4dc146542ba7763305d71d1b3d38',
+    domain: 'graphql.myshopify.com'
+  });
 
   const [products,setProducts] = useState([]);
   const [isCartOpen,setCartOpen] = useState(false);
@@ -15,16 +22,23 @@ function App(props){
   };
 
   useEffect(() => {
-    props.client.checkout.create().then((res) => {
+    let checkoutCreate = client.checkout.create().then((res) => {
+      console.log("checkout create")
       setCheckout( res );
     });
 
-    props.client.product.fetchAll().then((res) => {
+    let productFetch = client.product.fetchAll().then((res) => {
+      console.log("product fetch")
       setProducts( res );
     });
 
-    props.client.shop.fetchInfo().then((res) => {
+    let shopInfo = client.shop.fetchInfo().then((res) => {
+      console.log("shop info")
       setShop(res);
+    });
+
+    Promise.all([checkoutCreate, productFetch, shopInfo]).then(()=>{
+      console.log("all data ready");
     });
 
   }, []);
@@ -36,7 +50,7 @@ function App(props){
     const lineItemsToAdd = [{variantId, quantity: parseInt(quantity, 10)}]
     const checkoutId = checkout.id
 
-    return props.client.checkout.addLineItems(checkoutId, lineItemsToAdd).then(res => {
+    return client.checkout.addLineItems(checkoutId, lineItemsToAdd).then(res => {
       setCheckout( res );
     });
   }
@@ -45,7 +59,7 @@ function App(props){
     const checkoutId = checkout.id
     const lineItemsToUpdate = [{id: lineItemId, quantity: parseInt(quantity, 10)}]
 
-    return props.client.checkout.updateLineItems(checkoutId, lineItemsToUpdate).then(res => {
+    return client.checkout.updateLineItems(checkoutId, lineItemsToUpdate).then(res => {
       setCheckout( res );
     });
   }
@@ -53,7 +67,7 @@ function App(props){
   const removeLineItemInCart = (lineItemId) => {
     const checkoutId = checkout.id
 
-    return props.client.checkout.removeLineItems(checkoutId, [lineItemId]).then(res => {
+    return client.checkout.removeLineItems(checkoutId, [lineItemId]).then(res => {
 
       setCheckout( res );
     });
@@ -79,7 +93,7 @@ function App(props){
         </header>
         <Products
           products={products}
-          client={props.client}
+          client={client}
           addVariantToCart={addVariantToCart}
         />
         <Cart
