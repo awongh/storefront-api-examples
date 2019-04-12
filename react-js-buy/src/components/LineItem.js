@@ -1,6 +1,6 @@
 import React from 'react';
 
-function LineItemm(props){
+function LineItem(props){
 
   const decrementQuantity = (lineItemId) => {
     const updatedQuantity = props.line_item.quantity - 1
@@ -42,4 +42,4 @@ function LineItemm(props){
   );
 }
 
-export default LineItemm;
+export default LineItem;

@@ -7,6 +7,38 @@ import Client from 'shopify-buy';
 import Products from './components/Products';
 import Cart from './components/Cart';
 
+
+import { createPortal } from "react-dom";
+
+
+const CartPortal = (props) => {
+
+  const [modalContainer] = useState(document.createElement('div'));
+
+  useEffect(() => {
+    // Find the root element in your DOM
+    let modalRoot = document.getElementById(props.appendId);
+
+    // Append modal container to root
+    modalRoot.appendChild(modalContainer);
+    return function cleanup() {
+      // On cleanup remove the modal container
+      modalRoot.removeChild(modalContainer);
+    };
+  }, []); // <- The empty array tells react to apply the effect on mount/unmount
+
+  let quantity = props.quantity > 0 ? props.quantity : '';
+
+  const cart = (<div>
+      <h2>{quantity}</h2>
+      <button onClick={()=> props.setCartOpen(!props.isCartOpen)}>HELLO</button>
+    </div>);
+
+  return createPortal(cart, modalContainer);
+};
+
+
+
 function Shopify(props){
 
   const client = Client.buildClient({
@@ -14,6 +46,7 @@ function Shopify(props){
     domain: 'graphql.myshopify.com'
   });
 
+  const [totalQuantity,setTotalQuantity] = useState(0);
   const [doneLoading,setDoneLoading] = useState(false);
   const [products,setProducts] = useState([]);
   const [isCartOpen,setCartOpen] = useState(false);
@@ -52,6 +85,15 @@ function Shopify(props){
 
   }, []);
 
+  const getTotalQuantity = (lineItems) => {
+    let quantity = 0;
+    lineItems.forEach((lineItem) => {
+      quantity = quantity + lineItem.quantity;
+    });
+
+    return quantity;
+  };
+
   const addVariantToCart = (variantId, quantity) => {
 
     setCartOpen( true );
@@ -60,6 +102,11 @@ function Shopify(props){
     const checkoutId = checkout.id
 
     return client.checkout.addLineItems(checkoutId, lineItemsToAdd).then(res => {
+      console.log( res );
+
+      let totalQuantity = getTotalQuantity( res.lineItems );
+      setTotalQuantity( totalQuantity );
+
       setCheckout( res );
     });
   }
@@ -69,6 +116,11 @@ function Shopify(props){
     const lineItemsToUpdate = [{id: lineItemId, quantity: parseInt(quantity, 10)}]
 
     return client.checkout.updateLineItems(checkoutId, lineItemsToUpdate).then(res => {
+      console.log( res);
+
+      let totalQuantity = getTotalQuantity( res.lineItems );
+      setTotalQuantity( totalQuantity );
+
       setCheckout( res );
     });
   }
@@ -77,13 +129,16 @@ function Shopify(props){
     const checkoutId = checkout.id
 
     return client.checkout.removeLineItems(checkoutId, [lineItemId]).then(res => {
+      console.log( res );
+
+      let totalQuantity = getTotalQuantity( res.lineItems );
+      setTotalQuantity( totalQuantity );
 
       setCheckout( res );
     });
   }
 
   const handleCartClose = () => {
-
     setCartOpen( false );
   }
 
@@ -138,6 +193,12 @@ function Shopify(props){
         handleCartClose={handleCartClose}
         updateQuantityInCart={updateQuantityInCart}
         removeLineItemInCart={removeLineItemInCart}
+      />
+      <CartPortal
+        isCartOpen={isCartOpen}
+        setCartOpen={setCartOpen}
+        appendId="cart-btn-cont"
+        quantity={totalQuantity}
       />
     </div>
   );
