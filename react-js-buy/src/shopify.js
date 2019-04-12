@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
 
+import classnames from 'classnames';
+
 import Client from 'shopify-buy';
 
 import Products from './components/Products';
 import Cart from './components/Cart';
 
-function App(props){
+function Shopify(props){
 
   const client = Client.buildClient({
     storefrontAccessToken: 'dd4d4dc146542ba7763305d71d1b3d38',
     domain: 'graphql.myshopify.com'
   });
 
+  const [doneLoading,setDoneLoading] = useState(false);
   const [products,setProducts] = useState([]);
   const [isCartOpen,setCartOpen] = useState(false);
   const [checkout,setCheckout] = useState({ lineItems: [] });
@@ -39,6 +42,12 @@ function App(props){
 
     Promise.all([checkoutCreate, productFetch, shopInfo]).then(()=>{
       console.log("all data ready");
+      setDoneLoading(true);
+    });
+
+    document.querySelector('#shopify-loader').addEventListener('animationend', function(ev) {
+      ev.target.style.display = "none";
+      console.log("set appear thing");
     });
 
   }, []);
@@ -78,8 +87,27 @@ function App(props){
     setCartOpen( false );
   }
 
-  return (
-    <div className="App">
+  var loaderClass = classnames({
+      loader:true,
+      animated:doneLoading,
+      fadeOut: doneLoading,
+      faster: doneLoading
+  });
+
+  let loader = (<div id="shopify-loader" className={loaderClass}><img className="load-gif" src="https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif"/></div>);
+
+  let appContents;
+
+  if( doneLoading ){
+
+    var appClass = classnames({
+        hello:true,
+        animated:doneLoading,
+        fadeInDown: doneLoading,
+        faster: doneLoading
+    });
+
+    appContents = (<div className={appClass}>
         <header className="App__header">
           {!isCartOpen &&
             <div className="App__view-cart-wrapper">
@@ -87,8 +115,8 @@ function App(props){
             </div>
           }
           <div className="App__title">
-            <h1>{shop.name}: React Example</h1>
-            <h2>{shop.description}</h2>
+            <h1>shop name: {shop.name}</h1>
+            <h2>desc: {shop.description}</h2>
           </div>
         </header>
         <Products
@@ -96,15 +124,23 @@ function App(props){
           client={client}
           addVariantToCart={addVariantToCart}
         />
-        <Cart
-          checkout={checkout}
-          isCartOpen={isCartOpen}
-          handleCartClose={handleCartClose}
-          updateQuantityInCart={updateQuantityInCart}
-          removeLineItemInCart={removeLineItemInCart}
-        />
-      </div>
+      </div>);
+  }
+
+  return (
+    <div className="App">
+      {appContents}
+      {loader}
+      <Cart
+        doneLoading={doneLoading}
+        checkout={checkout}
+        isCartOpen={isCartOpen}
+        handleCartClose={handleCartClose}
+        updateQuantityInCart={updateQuantityInCart}
+        removeLineItemInCart={removeLineItemInCart}
+      />
+    </div>
   );
 }
 
-export default App;
+export default Shopify;

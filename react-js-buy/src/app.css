@@ -26,20 +26,19 @@ img {
 h1 {
   font-weight: 300;
   margin: 0 0 15px;
-  font-size: 3rem;
+  font-size: 1.6rem;
 }
 
 h2 {
   font-weight: 300;
   margin: 0;
-  font-size: 2rem;
+  font-size: 1rem;
 }
 
 /* BASE APP
  * ============================== */
 .App__header {
   background-color: #222;
-  background-image: url('https://unsplash.it/1000/300?image=823');
   background-size: cover;
   color: white;
   padding: 10px 10px;
@@ -56,7 +55,7 @@ h2 {
 }
 
 .App__title {
-  padding: 80px 20px;
+  padding: 10px 10px;
   text-align: center;
 }
 

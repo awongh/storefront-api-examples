@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import Shopify from './shopify';
 import './app.css';
 
 ReactDOM.render(
-  <App/>,
+  <Shopify/>,
   document.getElementById('root')
 );

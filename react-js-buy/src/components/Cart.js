@@ -20,7 +20,7 @@ function Cart(props){
   });
 
   return (
-    <div className={`Cart ${props.isCartOpen ? 'Cart--open' : ''}`}>
+    <div className={`Cart ${props.isCartOpen ? 'Cart--open' : ''} ${props.doneLoading ? '' : 'hidden'}`}>
       <header className="Cart__header">
         <h2>Your cart</h2>
         <button
