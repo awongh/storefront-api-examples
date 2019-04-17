@@ -1,5 +1,7 @@
 import React from 'react';
 
+import classnames from 'classnames';
+
 import LineItem from './LineItem';
 
 function Cart(props){
@@ -11,6 +13,7 @@ function Cart(props){
   let line_items = props.checkout.lineItems.map((line_item) => {
     return (
       <LineItem
+        loaded={!props.cartItemLoading}
         updateQuantityInCart={props.updateQuantityInCart}
         removeLineItemInCart={props.removeLineItemInCart}
         key={line_item.id.toString()}
@@ -18,6 +21,19 @@ function Cart(props){
       />
     );
   });
+
+  const lineItemClass = classnames({
+      "line-item-cont":true,
+
+      animated:true,
+
+      // we need to keep track of things that are about to be loaded (the array of items is pushed from within the lib)
+      blank:!props.cartItemLoader,
+      fadeIn: props.cartItemLoader,
+      fadeOutDown: !props.cartItemLoading,
+  });
+
+  const cartLoading = <li className={lineItemClass}></li>;
 
   return (
     <div className={`Cart ${props.isCartOpen ? 'Cart--open' : ''} ${props.doneLoading ? '' : 'hidden'}`}>
@@ -31,6 +47,7 @@ function Cart(props){
       </header>
       <ul className="Cart__line-items">
         {line_items}
+        {cartLoading}
       </ul>
       <footer className="Cart__footer">
         <div className="Cart-info clearfix">

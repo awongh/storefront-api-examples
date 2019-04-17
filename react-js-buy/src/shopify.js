@@ -79,6 +79,10 @@ function Shopify(props){
   const [doneLoading,setDoneLoading] = useState(false);
   const [products,setProducts] = useState([]);
   const [isCartOpen,setCartOpen] = useState(false);
+
+  const [cartItemLoader,setCartItemLoader] = useState(false);
+  const [cartItemLoading,setCartItemLoading] = useState(false);
+
   const [checkout,setCheckout] = useState({ lineItems: [] });
   const [shop,setShop] = useState({});
 
@@ -141,16 +145,33 @@ function Shopify(props){
 
     setCartOpen( true );
 
+
     const lineItemsToAdd = [{
       variantId,
       quantity: parseInt(quantity, 10),
       customAttributes
     }];
 
+    // set the loading thing
+    setCartItemLoading(true);
+    setTimeout(()=>{
+      console.log("done waiting");
+      if(cartItemLoading === false){
+        console.log("setting loader");
+        setCartItemLoader(true);
+      }
+
+    },300);
+
     const checkoutId = checkout.id;
 
     return retry(()=> client.checkout.addLineItems(checkoutId, lineItemsToAdd) )
-      .then(lineItemsCallback)
+      .then((res) => {
+
+        setCartItemLoader(false);
+        setCartItemLoading(false);
+        lineItemsCallback(res);
+      })
       .catch(genericError);
   }
 
@@ -227,6 +248,8 @@ function Shopify(props){
       {appContents}
       {loader}
       <Cart
+        cartItemLoader={cartItemLoader}
+        cartItemLoading={cartItemLoading}
         doneLoading={doneLoading}
         checkout={checkout}
         isCartOpen={isCartOpen}
