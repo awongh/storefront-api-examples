@@ -12,6 +12,13 @@ function LineItem(props){
     props.updateQuantityInCart(lineItemId, updatedQuantity);
   }
 
+  let displayDateTime = props.line_item.customAttributes.find( item => item.key === 'displayDateTime' ? true : false ).value;
+
+  let displayPlace = props.line_item.customAttributes.find( item => item.key === 'displayPlace' ? true : false ).value;
+
+  let giftCard = props.line_item.customAttributes.find( item => item.key === 'giftCard' ? true : false ).value;
+
+
   return (
     <li className="Line-item">
       <div className="Line-item__img">
@@ -36,6 +43,18 @@ function LineItem(props){
             $ { (props.line_item.quantity * props.line_item.variant.price).toFixed(2) }
           </span>
           <button className="Line-item__remove" onClick={()=> props.removeLineItemInCart(props.line_item.id)}>×</button>
+        </div>
+
+        <div className="Line-item__content-row">
+          place: {displayPlace}
+        </div>
+
+        <div className="Line-item__content-row">
+          date: {displayDateTime}
+        </div>
+
+        <div className="Line-item__content-row">
+          gift card: {giftCard}
         </div>
       </div>
     </li>

@@ -13,6 +13,9 @@ function Product(props){
   const [selectedOptions,setSelectedOptions] = useState(defaultOptionValues);
 
   const [variantImage,setVariantImage] = useState(props.product.images[0]);
+
+  const [giftCardSelected,setGiftCard] = useState(false);
+
   const [variant,setVariant] = useState(props.product.variants[0]);
   const [variantQuantity,setVariantQuantity] = useState(1);
 
@@ -36,6 +39,11 @@ function Product(props){
     setVariantImage(selectedVariant.attrs.image);
   }
 
+  const handleGCChange = () => {
+    console.log( "HAHAHA", giftCardSelected  );
+    setGiftCard( !giftCardSelected );
+  };
+
   const handleQuantityChange = (event) => {
     setVariantQuantity(event.target.value);
   }
@@ -50,17 +58,55 @@ function Product(props){
     );
   });
 
+  let addToCart = () => {
+
+
+    const customAttributes = [{
+      key:"epoch", value:"1234567",
+    },
+    {
+      key:"placeId", value:"987654321",
+    },
+    {
+      key:"displayDateTime", value:"10:00am, January 4, 2019",
+    },
+    {
+      key:"displayPlace", value:"Puerto Vallarta",
+    },
+    {
+      key:"giftCard",
+      value:giftCardSelected+''
+    }];
+
+    setGiftCard( false );
+    props.addVariantToCart(variant.id, variantQuantity, customAttributes)
+
+
+
+  };
+
   return (
     <div className="Product">
       {props.product.images.length ? <img src={variantImage.src} alt={`${props.product.title} product shot`}/> : null}
       <h5 className="Product__title">{props.product.title}</h5>
       <span className="Product__price">${variant.price}</span>
       {variantSelectors}
+
       <label className="Product__option">
         Quantity
         <input min="1" type="number" defaultValue={variantQuantity} onChange={handleQuantityChange}></input>
       </label>
-      <button className="Product__buy button" onClick={() => props.addVariantToCart(variant.id, variantQuantity)}>Add to Cart</button>
+
+      <label className="Product__option">
+        Gift Card
+        <input
+          type="checkbox"
+          onChange={handleGCChange}
+          checked={giftCardSelected}
+        />
+      </label>
+
+      <button className="Product__buy button" onClick={addToCart}>Add to Cart</button>
     </div>
   );
 }

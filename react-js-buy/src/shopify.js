@@ -7,9 +7,37 @@ import Client from 'shopify-buy';
 import Products from './components/Products';
 import Cart from './components/Cart';
 
-
 import { createPortal } from "react-dom";
 
+// promise retry
+// pass an arrow function in - it doesnt handle params
+function retry(fn, retriesLeft = 5, interval = 500) {
+  return new Promise((resolve, reject) => {
+    fn()
+      .then(resolve)
+      .catch((error) => {
+        console.log("caught errors!");
+
+        if (retriesLeft === 0) {
+          console.log("rejecting!");
+          // reject('maximum retries exceeded');
+          reject(error);
+          return;
+        }
+
+        console.log("ab out to set error timeoput");
+
+        setTimeout(() => {
+
+          console.log("timed out, now we are calling again!!!!!!");
+          console.log("retruies LEFT: "+retriesLeft);
+          console.log("interVAL:L "+interval);
+          // Passing on "reject" is the important part
+          retry(fn, retriesLeft - 1, interval + 500).then(resolve, reject);
+        }, interval);
+      });
+  });
+}
 
 const CartPortal = (props) => {
 
@@ -46,6 +74,7 @@ function Shopify(props){
     domain: 'graphql.myshopify.com'
   });
 
+  const [hasError,setError] = useState(false);
   const [totalQuantity,setTotalQuantity] = useState(0);
   const [doneLoading,setDoneLoading] = useState(false);
   const [products,setProducts] = useState([]);
@@ -58,17 +87,17 @@ function Shopify(props){
   };
 
   useEffect(() => {
-    let checkoutCreate = client.checkout.create().then((res) => {
+    let checkoutCreate = retry(()=> client.checkout.create() ).then((res) => {
       console.log("checkout create")
       setCheckout( res );
     });
 
-    let productFetch = client.product.fetchAll().then((res) => {
+    let productFetch = retry(()=> client.product.fetchAll() ).then((res) => {
       console.log("product fetch")
       setProducts( res );
     });
 
-    let shopInfo = client.shop.fetchInfo().then((res) => {
+    let shopInfo = retry(()=> client.shop.fetchInfo() ).then((res) => {
       console.log("shop info")
       setShop(res);
     });
@@ -78,6 +107,7 @@ function Shopify(props){
       setDoneLoading(true);
     });
 
+    // take the loader off the page
     document.querySelector('#shopify-loader').addEventListener('animationend', function(ev) {
       ev.target.style.display = "none";
       console.log("set appear thing");
@@ -94,48 +124,51 @@ function Shopify(props){
     return quantity;
   };
 
-  const addVariantToCart = (variantId, quantity) => {
+  const genericError = ()=>{
+    setError( true );
+  };
 
-    setCartOpen( true );
-
-    const lineItemsToAdd = [{variantId, quantity: parseInt(quantity, 10)}]
-    const checkoutId = checkout.id
-
-    return client.checkout.addLineItems(checkoutId, lineItemsToAdd).then(res => {
+  const lineItemsCallback = (res)=>{
       console.log( res );
 
       let totalQuantity = getTotalQuantity( res.lineItems );
       setTotalQuantity( totalQuantity );
 
       setCheckout( res );
-    });
+  };
+
+  const addVariantToCart = (variantId, quantity, customAttributes) => {
+
+    setCartOpen( true );
+
+    const lineItemsToAdd = [{
+      variantId,
+      quantity: parseInt(quantity, 10),
+      customAttributes
+    }];
+
+    const checkoutId = checkout.id;
+
+    return retry(()=> client.checkout.addLineItems(checkoutId, lineItemsToAdd) )
+      .then(lineItemsCallback)
+      .catch(genericError);
   }
 
   const updateQuantityInCart = (lineItemId, quantity) => {
     const checkoutId = checkout.id
     const lineItemsToUpdate = [{id: lineItemId, quantity: parseInt(quantity, 10)}]
 
-    return client.checkout.updateLineItems(checkoutId, lineItemsToUpdate).then(res => {
-      console.log( res);
-
-      let totalQuantity = getTotalQuantity( res.lineItems );
-      setTotalQuantity( totalQuantity );
-
-      setCheckout( res );
-    });
+    return retry(() => client.checkout.updateLineItems(checkoutId, lineItemsToUpdate) )
+      .then(lineItemsCallback)
+      .catch(genericError);
   }
 
   const removeLineItemInCart = (lineItemId) => {
     const checkoutId = checkout.id
 
-    return client.checkout.removeLineItems(checkoutId, [lineItemId]).then(res => {
-      console.log( res );
-
-      let totalQuantity = getTotalQuantity( res.lineItems );
-      setTotalQuantity( totalQuantity );
-
-      setCheckout( res );
-    });
+    return retry(()=> client.checkout.removeLineItems(checkoutId, [lineItemId]) )
+      .then(lineItemsCallback)
+      .catch(genericError);
   }
 
   const handleCartClose = () => {
@@ -182,8 +215,15 @@ function Shopify(props){
       </div>);
   }
 
+  let error;
+
+  if( hasError ){
+    error = <h1>ERROR</h1>;
+  }
+
   return (
     <div className="App">
+      {error}
       {appContents}
       {loader}
       <Cart
