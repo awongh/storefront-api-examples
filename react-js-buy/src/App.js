@@ -73,6 +73,7 @@ function App(props){
             </div>
           }
           <div className="App__title">
+            <h1>foo and bar</h1>
             <h1>{shop.name}: React Example</h1>
             <h2>{shop.description}</h2>
           </div>

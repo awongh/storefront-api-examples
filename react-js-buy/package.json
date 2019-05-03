@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "enzyme-adapter-react-16": "^1.12.1",
+    "jest-enzyme": "^7.0.2",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
+    "react-test-renderer": "^16.8.6",
     "shopify-buy": "^2.0.1"
   },
   "devDependencies": {
-    "react-scripts": "0.9.5"
+    "enzyme": "^3.9.0",
+    "react-scripts": "3.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
