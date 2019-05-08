@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "enzyme-adapter-react-16": "^1.12.1",
-    "jest-enzyme": "^7.0.2",
-    "react": "^16.8.1",
-    "react-dom": "^16.8.1",
-    "react-test-renderer": "^16.8.6",
+    "react": "16.9.0-alpha.0",
+    "react-dom": "16.9.0-alpha.0",
     "shopify-buy": "^2.0.1"
   },
   "devDependencies": {
     "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.12.1",
+    "jest-enzyme": "^7.0.2",
+    "jest-fetch-mock": "^2.1.2",
     "react-scripts": "3.0.0"
   },
   "scripts": {
@@ -19,5 +19,17 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
