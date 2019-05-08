@@ -1,0 +1,3 @@
+[submodule "react-js-buy/js-buy-sdk"]
+	path = react-js-buy/js-buy-sdk
+	url = git@github.com:awongh/js-buy-sdk.git
