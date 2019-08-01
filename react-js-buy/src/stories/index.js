@@ -23,6 +23,7 @@ const client = Client.buildClient({
   domain: 'graphql.myshopify.com'
 });
 
+
 storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
 
 storiesOf('Whole App', module)
@@ -63,4 +64,60 @@ storiesOf('Whole App', module)
       })
 
       return <App client={client}/>
-})
+    }).add('slow -without internet', () => {
+
+      var delay = 15000;
+
+      fetchMock.post(
+        '*',
+        (url, opts) => {
+          // this will be called each time the lib tries to make a post graph QL query. intercept it and give back a thing.
+
+          var checkout = `checkoutCreate`;
+          if( JSON.parse( opts.body ).query.includes(checkout) ){
+
+            var result = checkoutFixture;
+          }else if( JSON.parse( opts.body ).query.includes("query { shop { currencyCode,paymentSettings") ){
+            var result = shopInfoFixture;
+          }else if( JSON.parse( opts.body ).query.includes("fragment VariantFragment on ProductVariant") ){
+            var result = queryProductsFixture;
+          }
+
+          //debugger;
+          return new Promise( (resolve, reject) => {
+            setTimeout(()=>{
+              console.log("%%%%%%%%%"+Math.random()+" : "+delay);
+              resolve( result );
+            },delay)
+            console.log( delay );
+            delay  = delay +  4000
+            console.log("$$$$$$$$$$$$$$$$$$$$$$"+Math.random()+" : "+delay);
+          });
+      }).catch(unmatchedUrl => {
+        console.log("what");
+        debugger;
+
+        return false;
+      })
+
+      return <App client={client}/>
+
+    }).add('404 internet', () => {
+      var delay = 15000;
+
+      fetchMock.post(
+        '*',
+        (url, opts) => {
+          return {
+            body: {foo:"bar"},
+            status:404,
+          };
+      }).catch(unmatchedUrl => {
+        console.log("what");
+        debugger;
+
+        return false;
+      })
+
+      return <App client={client}/>
+    });
