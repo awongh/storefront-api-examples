@@ -28,7 +28,10 @@ storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo(
 
 storiesOf('Whole App', module)
     .add('with internet', () => (
-      <Shopify client={client}/>
+      <div>
+        <div id="cart-btn-cont"></div>
+        <Shopify client={client}/>
+      </div>
     ))
     .add('without internet', () => {
 
@@ -63,7 +66,12 @@ storiesOf('Whole App', module)
         return false;
       })
 
-      return <Shopify client={client}/>
+      return (
+      <div>
+        <div id="cart-btn-cont"></div>
+        <Shopify client={client}/>
+      </div>
+      );
     }).add('slow -without internet', () => {
 
       var delay = 15000;
@@ -100,7 +108,10 @@ storiesOf('Whole App', module)
         return false;
       })
 
-      return <Shopify client={client}/>
+      return (<div>
+        <div id="cart-btn-cont"></div>
+        <Shopify client={client}/>
+      </div>);
 
     }).add('404 internet', () => {
       var delay = 15000;
@@ -119,5 +130,8 @@ storiesOf('Whole App', module)
         return false;
       })
 
-      return <Shopify client={client}/>
+      return (<div>
+        <div id="cart-btn-cont"></div>
+        <Shopify client={client}/>
+      </div>);
     });
