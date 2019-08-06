@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+<<<<<<< HEAD
     "classnames": "^2.2.6",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
@@ -10,11 +11,29 @@
   },
   "devDependencies": {
     "react-scripts": "2.1.5"
+=======
+    "@babel/polyfill": "^7.4.4",
+    "core-js": "^2.6.9",
+    "fsevents": "^2.0.7",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
+    "shopify-buy": "^2.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@storybook/addon-actions": "^5.1.9",
+    "@storybook/addon-links": "^5.1.9",
+    "@storybook/addons": "^5.1.9",
+    "@storybook/react": "^5.1.9",
+    "fetch-mock": "^7.3.9",
+    "react-scripts": "^3.0.1"
+>>>>>>> storybook
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+<<<<<<< HEAD
     "eject": "react-scripts eject"
   },
   "browserslist": [
@@ -23,4 +42,25 @@
     "not ie <= 11",
     "not op_mini all"
   ]
+=======
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 9009 -s public",
+    "build-storybook": "build-storybook -s public"
+  },
+  "resolutions": {
+    "**/**/node-gyp": "^3.8.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+>>>>>>> storybook
 }
