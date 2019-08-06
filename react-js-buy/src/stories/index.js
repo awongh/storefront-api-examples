@@ -5,7 +5,7 @@ import shopInfoFixture from '../../js-buy-sdk/fixtures/shop-info-fixture.js';
 import queryProductsFixture from './fixtures/query-products-fixture.js';
 import checkoutLineItemsAdd from './fixtures/checkout-line-items-add-fixture.js';
 
-import App from '../App';
+import Shopify from '../shopify';
 import Client from 'shopify-buy';
 import '../../../shared/app.css';
 
@@ -28,7 +28,7 @@ storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo(
 
 storiesOf('Whole App', module)
     .add('with internet', () => (
-      <App client={client}/>
+      <Shopify client={client}/>
     ))
     .add('without internet', () => {
 
@@ -63,7 +63,7 @@ storiesOf('Whole App', module)
         return false;
       })
 
-      return <App client={client}/>
+      return <Shopify client={client}/>
     }).add('slow -without internet', () => {
 
       var delay = 15000;
@@ -100,7 +100,7 @@ storiesOf('Whole App', module)
         return false;
       })
 
-      return <App client={client}/>
+      return <Shopify client={client}/>
 
     }).add('404 internet', () => {
       var delay = 15000;
@@ -119,5 +119,5 @@ storiesOf('Whole App', module)
         return false;
       })
 
-      return <App client={client}/>
+      return <Shopify client={client}/>
     });
