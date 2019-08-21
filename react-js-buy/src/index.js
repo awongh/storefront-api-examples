@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Shopify from './shopify';
 import './app.css';
-import App from './App';
 import Client from 'shopify-buy';
 
 // wtf it doesnt let you import from parent dir anymore
@@ -15,6 +14,6 @@ const client = Client.buildClient({
 });
 
 ReactDOM.render(
-  <Shopify/>,
+  <Shopify client={client}/>,
   document.getElementById('root')
 );

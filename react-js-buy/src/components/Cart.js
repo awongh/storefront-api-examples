@@ -21,6 +21,7 @@ function Cart(props){
       />
     );
   });
+  console.log( line_items );
 
   const lineItemClass = classnames({
       "line-item-cont":true,

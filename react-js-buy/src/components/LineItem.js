@@ -24,11 +24,32 @@ function LineItem(props){
     props.updateQuantityInCart(lineItemId, updatedQuantity);
   }
 
-  let displayDateTime = props.line_item.customAttributes.find( item => item.key === 'displayDateTime' ? true : false ).value;
+  let displayDateTime = props.line_item.customAttributes.find( item => item.key === 'displayDateTime' ? true : false );
 
-  let displayPlace = props.line_item.customAttributes.find( item => item.key === 'displayPlace' ? true : false ).value;
+  let displayPlace = props.line_item.customAttributes.find( item => item.key === 'displayPlace' ? true : false );
 
-  let giftCard = props.line_item.customAttributes.find( item => item.key === 'giftCard' ? true : false ).value;
+  let dateInfo = "";
+  if( displayDateTime != undefined || displayPlace !== undefined ){
+    dateInfo = (<div className="date-info">
+            <div className="Line-item__content-row">
+              place: {displayPlace.value}
+            </div>
+
+            <div className="Line-item__content-row">
+              date: {displayDateTime.value}
+            </div>
+          </div>);
+  }
+
+  let giftCard = props.line_item.customAttributes.find( item => item.key === 'giftCard' ? true : false );
+
+  let giftCardDisplay = "";
+
+  if( giftCard != undefined ){
+    giftCardDisplay = (<div className="Line-item__content-row">
+            gift card: {giftCard.value}
+          </div>)
+  }
 
 
   let lineItemClass = classnames({
@@ -67,18 +88,9 @@ function LineItem(props){
             </span>
             <button className="Line-item__remove" onClick={()=> removeLineItemInCart(props.line_item.id)}>×</button>
           </div>
+          {dateInfo}
+          {giftCardDisplay}
 
-          <div className="Line-item__content-row">
-            place: {displayPlace}
-          </div>
-
-          <div className="Line-item__content-row">
-            date: {displayDateTime}
-          </div>
-
-          <div className="Line-item__content-row">
-            gift card: {giftCard}
-          </div>
         </div>
       </div>
     </li>
