@@ -6,44 +6,11 @@ import classnames from 'classnames';
 
 import Products from './components/Products';
 import Cart from './components/Cart';
-
-import { createPortal } from "react-dom";
-
-
-const CartPortal = (props) => {
-
-  const [modalContainer] = useState(document.createElement('div'));
-
-  useEffect(() => {
-    // Find the root element in your DOM
-    let modalRoot = document.getElementById(props.appendId);
-
-    // Append modal container to root
-    modalRoot.appendChild(modalContainer);
-    return function cleanup() {
-      // On cleanup remove the modal container
-      modalRoot.removeChild(modalContainer);
-    };
-  }, []); // <- The empty array tells react to apply the effect on mount/unmount
-
-  let quantity = props.quantity > 0 ? props.quantity : '';
-
-  const cart = (<div>
-      <h2>{quantity}</h2>
-      <button onClick={()=> props.setCartOpen(!props.isCartOpen)}>HELLO</button>
-    </div>);
-
-  return createPortal(cart, modalContainer);
-};
-
+import CartPortal from './components/CartPortal';
 
 function App(props){
 
   const client = props.client;
-  //  const client = Client.buildClient({
-  //  storefrontAccessToken: 'dd4d4dc146542ba7763305d71d1b3d38',
-  //  domain: 'graphql.myshopify.com'
-  //  });
 
   const [hasError,setError] = useState(false);
   const [totalQuantity,setTotalQuantity] = useState(0);
@@ -109,7 +76,6 @@ function App(props){
   };
 
   const lineItemsCallback = (res)=>{
-      console.log( res );
 
       let totalQuantity = getTotalQuantity( res.lineItems );
       setTotalQuantity( totalQuantity );
@@ -131,12 +97,9 @@ function App(props){
     // set the loading thing
     setCartItemLoading(true);
     setTimeout(()=>{
-      console.log("done waiting");
       if(cartItemLoading === false){
-        console.log("setting loader");
         setCartItemLoader(true);
       }
-
     },300);
 
     const checkoutId = checkout.id;
@@ -179,7 +142,11 @@ function App(props){
       faster: doneLoading
   });
 
-  let loader = (<div id="shopify-loader" className={loaderClass}><img className="load-gif" src="https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif"/></div>);
+  let loaderGifSrc = "https://cdnjs.cloudflare.com/ajax/libs/galleriffic/2.0.1/css/loader.gif";
+
+  let loader = (<div id="shopify-loader" className={loaderClass}>
+    <img className="load-gif" src={loaderGifSrc}/>
+  </div>);
 
   let appContents;
 
@@ -214,7 +181,7 @@ function App(props){
 
   return (
       <div className="App">
-        {appContents}
+        {appContents || ""}
         {loader}
         <Cart
           cartItemLoader={cartItemLoader}

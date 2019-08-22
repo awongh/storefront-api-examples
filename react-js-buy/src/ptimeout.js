@@ -13,7 +13,7 @@ function withTimeout(promise, timeout){
 
 // promise retry
 // pass an arrow function in - it doesnt handle params
-function retry(fn, retriesLeft = 5, interval = 500, initialTimeout = 5000) {
+function retry(fn, retriesLeft = 5, interval = 500, initialTimeout = 15000) {
 
   return new Promise((resolve, reject) => {
 
@@ -33,9 +33,10 @@ function retry(fn, retriesLeft = 5, interval = 500, initialTimeout = 5000) {
 
         setTimeout(() => {
 
+          // TODO: try to connet this to sentry
           console.log(`timed out. retries left: ${retriesLeft} : interval: ${interval}`);
           // Passing on "reject" is the important part
-          retry(fn, retriesLeft - 1, interval + 500).then(resolve, reject);
+          retry(fn, retriesLeft - 1, interval + 500, initialTimeout).then(resolve, reject);
         }, interval);
     });
   });
