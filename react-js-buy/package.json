@@ -5,12 +5,14 @@
   "dependencies": {
     "enzyme-adapter-react-16": "^1.12.1",
     "jest-enzyme": "^7.0.2",
+    "nock": "^10.0.6",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "react-test-renderer": "^16.8.6",
     "shopify-buy": "^2.0.1"
   },
   "devDependencies": {
+    "@storybook/react": "^5.0.11",
     "enzyme": "^3.9.0",
     "react-scripts": "3.0.0"
   },
@@ -19,5 +21,17 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
