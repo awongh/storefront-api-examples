@@ -6,7 +6,8 @@
     "classnames": "^2.2.6",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
-    "shopify-buy": "^2.0.1"
+    "shopify-buy": "^2.0.1",
+    "storybook": "^1.0.0"
   },
   "devDependencies": {
     "@babel/polyfill": "^7.4.4",
