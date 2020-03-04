@@ -14,6 +14,9 @@ const client = Client.buildClient({
 });
 
 ReactDOM.render(
-  <Shopify client={client}/>,
+
+  <div>
+    <Shopify client={client}/>
+  </div>,
   document.getElementById('root')
 );

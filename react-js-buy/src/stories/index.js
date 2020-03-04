@@ -6,6 +6,7 @@ import queryProductsFixture from './fixtures/query-products-fixture.js';
 import checkoutLineItemsAdd from './fixtures/checkout-line-items-add-fixture.js';
 
 import Shopify from '../shopify';
+import Form from '../components/Form';
 import Client from 'shopify-buy';
 import '../../../shared/app.css';
 
@@ -27,6 +28,11 @@ const client = Client.buildClient({
 storiesOf('Welcome', module).add('to Storybook', () => <Welcome showApp={linkTo('Button')} />);
 
 storiesOf('Whole App', module)
+    .add('form', () => (
+      <div>
+        <Form addChart={()=>{}}/>
+      </div>
+    ))
     .add('with internet', () => (
       <div>
         <div id="cart-btn-cont"></div>
