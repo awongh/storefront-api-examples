@@ -9,7 +9,6 @@ const client = Client.buildClient({
   domain: 'graphql.myshopify.com'
 });
 
-ReactDOM.render(
-  <App client={client}/>,
+ReactDOM.createRoot(
   document.getElementById('root')
-);
+).render(<App client={client} />);

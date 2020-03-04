@@ -3,7 +3,8 @@ import React from 'react';
 import Product from './Product';
 
 function Products(props) {
-  let products = props.products.map((product) => {
+  const props_products = props.products.read();
+  let products = props_products.map((product) => {
     return (
       <Product
         addVariantToCart={props.addVariantToCart}

@@ -4,11 +4,13 @@ import LineItem from './LineItem';
 
 function Cart(props){
 
+  const checkout = props.checkout.read();
+
   const openCheckout = () => {
-    window.open(props.checkout.webUrl);
+    window.open(checkout.webUrl);
   }
 
-  let line_items = props.checkout.lineItems.map((line_item) => {
+  let line_items = checkout.lineItems.map((line_item) => {
     return (
       <LineItem
         updateQuantityInCart={props.updateQuantityInCart}
@@ -36,19 +38,19 @@ function Cart(props){
         <div className="Cart-info clearfix">
           <div className="Cart-info__total Cart-info__small">Subtotal</div>
           <div className="Cart-info__pricing">
-            <span className="pricing">$ {props.checkout.subtotalPrice}</span>
+            <span className="pricing">$ {checkout.subtotalPrice}</span>
           </div>
         </div>
         <div className="Cart-info clearfix">
           <div className="Cart-info__total Cart-info__small">Taxes</div>
           <div className="Cart-info__pricing">
-            <span className="pricing">$ {props.checkout.totalTax}</span>
+            <span className="pricing">$ {checkout.totalTax}</span>
           </div>
         </div>
         <div className="Cart-info clearfix">
           <div className="Cart-info__total Cart-info__small">Total</div>
           <div className="Cart-info__pricing">
-            <span className="pricing">$ {props.checkout.totalPrice}</span>
+            <span className="pricing">$ {checkout.totalPrice}</span>
           </div>
         </div>
         <button className="Cart__checkout button" onClick={openCheckout}>Checkout</button>
