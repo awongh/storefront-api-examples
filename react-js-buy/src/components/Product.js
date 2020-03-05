@@ -60,7 +60,7 @@ function Product(props){
         Quantity
         <input min="1" type="number" defaultValue={variantQuantity} onChange={handleQuantityChange}></input>
       </label>
-      <button className="Product__buy button" onClick={() => props.addVariantToCart(variant.id, variantQuantity)}>Add to Cart</button>
+      <button disabled={props.cartIsPending} className="Product__buy button" onClick={() => props.addVariantToCart(variant.id, variantQuantity)}>Add to Cart</button>
     </div>
   );
 }

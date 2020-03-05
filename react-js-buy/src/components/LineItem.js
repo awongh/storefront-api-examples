@@ -28,14 +28,14 @@ function LineItemm(props){
         </div>
         <div className="Line-item__content-row">
           <div className="Line-item__quantity-container">
-            <button className="Line-item__quantity-update" onClick={() => decrementQuantity(props.line_item.id)}>-</button>
+            <button disabled={props.cartIsPending} className="Line-item__quantity-update" onClick={() => decrementQuantity(props.line_item.id)}>-</button>
             <span className="Line-item__quantity">{props.line_item.quantity}</span>
-            <button className="Line-item__quantity-update" onClick={() => incrementQuantity(props.line_item.id)}>+</button>
+            <button disabled={props.cartIsPending} className="Line-item__quantity-update" onClick={() => incrementQuantity(props.line_item.id)}>+</button>
           </div>
           <span className="Line-item__price">
             $ { (props.line_item.quantity * props.line_item.variant.price).toFixed(2) }
           </span>
-          <button className="Line-item__remove" onClick={()=> props.removeLineItemInCart(props.line_item.id)}>×</button>
+          <button disabled={props.cartIsPending} className="Line-item__remove" onClick={()=> props.removeLineItemInCart(props.line_item.id)}>×</button>
         </div>
       </div>
     </li>

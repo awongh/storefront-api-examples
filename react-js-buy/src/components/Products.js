@@ -11,6 +11,7 @@ function Products(props) {
         client={props.client}
         key={product.id.toString()}
         product={product}
+        cartIsPending={props.cartIsPending}
       />
     );
   });

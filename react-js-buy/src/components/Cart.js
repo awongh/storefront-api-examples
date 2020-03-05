@@ -13,6 +13,7 @@ function Cart(props){
   let line_items = checkout.lineItems.map((line_item) => {
     return (
       <LineItem
+        cartIsPending={props.cartIsPending}
         updateQuantityInCart={props.updateQuantityInCart}
         removeLineItemInCart={props.removeLineItemInCart}
         key={line_item.id.toString()}
@@ -53,7 +54,7 @@ function Cart(props){
             <span className="pricing">$ {checkout.totalPrice}</span>
           </div>
         </div>
-        <button className="Cart__checkout button" onClick={openCheckout}>Checkout</button>
+        <button disabled={props.cartIsPending} className="Cart__checkout button" onClick={openCheckout}>Checkout</button>
       </footer>
     </div>
   )

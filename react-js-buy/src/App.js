@@ -1,4 +1,5 @@
-import React, { useState, Suspense } from "react";
+import React, { useEffect, useState, useTransition, Suspense } from "react";
+
 
 
 import Products from './components/Products';
@@ -52,42 +53,54 @@ function Header(props){
 function App(props){
 
   const [products,setProducts] = useState(wrapPromise(props.client.product.fetchAll()));
-  const [isCartOpen,setCartOpen] = useState(false);
+  const [isCartOpen,setCartOpen] = useState(null);
   const [checkout,setCheckout] = useState(wrapPromise(props.client.checkout.create()));
   const [shop,setShop] = useState(wrapPromise(props.client.shop.fetchInfo()));
+
+  const [startCartTrans, cartIsPending] = useTransition({
+    timeoutMs: 3000
+  });
 
   const cartOpen = () => {
     setCartOpen( true );
   };
 
+  // when the checkout changes, make sure the cart is open
+  useEffect(() => {
+    if( isCartOpen === null ){
+      setCartOpen( false );
+    }else if(isCartOpen === false){
+      setCartOpen( true );
+    }
+  }, [checkout]);
+
   const addVariantToCart = (variantId, quantity) => {
 
-    setCartOpen( true );
 
     const lineItemsToAdd = [{variantId, quantity: parseInt(quantity, 10)}]
-    const checkoutId = checkout.id
-
-    return props.client.checkout.addLineItems(checkoutId, lineItemsToAdd).then(res => {
-      setCheckout( res );
-    });
+    const checkoutId = checkout.read().id
+    startCartTrans(()=>{
+      setCheckout(wrapPromise(props.client.checkout.addLineItems(checkoutId, lineItemsToAdd)))
+    })
   }
 
   const updateQuantityInCart = (lineItemId, quantity) => {
-    const checkoutId = checkout.id
+    const checkoutId = checkout.read().id
     const lineItemsToUpdate = [{id: lineItemId, quantity: parseInt(quantity, 10)}]
 
-    return props.client.checkout.updateLineItems(checkoutId, lineItemsToUpdate).then(res => {
-      setCheckout( res );
-    });
+    startCartTrans(()=>{
+      //setCartOpen( true );
+      setCheckout(wrapPromise(props.client.checkout.updateLineItems(checkoutId, lineItemsToUpdate)))
+    })
   }
 
   const removeLineItemInCart = (lineItemId) => {
-    const checkoutId = checkout.id
+    const checkoutId = checkout.read().id
 
-    return props.client.checkout.removeLineItems(checkoutId, [lineItemId]).then(res => {
-
-      setCheckout( res );
-    });
+    startCartTrans(()=>{
+      //setCartOpen( true );
+      setCheckout(wrapPromise(props.client.checkout.removeLineItems(checkoutId, [lineItemId])))
+    })
   }
 
   const handleCartClose = () => {
@@ -103,6 +116,7 @@ function App(props){
           products={products}
           client={props.client}
           addVariantToCart={addVariantToCart}
+          cartIsPending={cartIsPending}
         />
         <Cart
           checkout={checkout}
@@ -110,6 +124,7 @@ function App(props){
           handleCartClose={handleCartClose}
           updateQuantityInCart={updateQuantityInCart}
           removeLineItemInCart={removeLineItemInCart}
+          cartIsPending={cartIsPending}
         />
       </Suspense>
     </div>
