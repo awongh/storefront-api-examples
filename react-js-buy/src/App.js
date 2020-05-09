@@ -1,10 +1,18 @@
 import React, { useEffect, useState, useTransition, Suspense } from "react";
 
-
-
 import Products from './components/Products';
 import Cart from './components/Cart';
 
+import Client from 'shopify-buy';
+
+const client = Client.buildClient({
+  storefrontAccessToken: 'dd4d4dc146542ba7763305d71d1b3d38',
+  domain: 'graphql.myshopify.com'
+});
+
+const initProducts = wrapPromise(client.product.fetchAll());
+const initCheckout = wrapPromise(client.checkout.create());
+const initShop = wrapPromise(client.shop.fetchInfo());
 
 function wrapPromise(promise) {
   let status = "pending";
@@ -52,10 +60,10 @@ function Header(props){
 
 function App(props){
 
-  const [products,setProducts] = useState(wrapPromise(props.client.product.fetchAll()));
+  const [products,setProducts] = useState(initProducts);
   const [isCartOpen,setCartOpen] = useState(null);
-  const [checkout,setCheckout] = useState(wrapPromise(props.client.checkout.create()));
-  const [shop,setShop] = useState(wrapPromise(props.client.shop.fetchInfo()));
+  const [checkout,setCheckout] = useState(initCheckout);
+  const [shop,setShop] = useState(initShop);
 
   const [startCartTrans, cartIsPending] = useTransition({
     timeoutMs: 3000
@@ -80,7 +88,7 @@ function App(props){
     const lineItemsToAdd = [{variantId, quantity: parseInt(quantity, 10)}]
     const checkoutId = checkout.read().id
     startCartTrans(()=>{
-      setCheckout(wrapPromise(props.client.checkout.addLineItems(checkoutId, lineItemsToAdd)))
+      setCheckout(wrapPromise(client.checkout.addLineItems(checkoutId, lineItemsToAdd)))
     })
   }
 
@@ -90,7 +98,7 @@ function App(props){
 
     startCartTrans(()=>{
       //setCartOpen( true );
-      setCheckout(wrapPromise(props.client.checkout.updateLineItems(checkoutId, lineItemsToUpdate)))
+      setCheckout(wrapPromise(client.checkout.updateLineItems(checkoutId, lineItemsToUpdate)))
     })
   }
 
@@ -99,7 +107,7 @@ function App(props){
 
     startCartTrans(()=>{
       //setCartOpen( true );
-      setCheckout(wrapPromise(props.client.checkout.removeLineItems(checkoutId, [lineItemId])))
+      setCheckout(wrapPromise(client.checkout.removeLineItems(checkoutId, [lineItemId])))
     })
   }
 
@@ -114,7 +122,7 @@ function App(props){
         <Header isCartOpen={isCartOpen} cartOpen={cartOpen} shop={shop}/>
         <Products
           products={products}
-          client={props.client}
+          client={client}
           addVariantToCart={addVariantToCart}
           cartIsPending={cartIsPending}
         />
