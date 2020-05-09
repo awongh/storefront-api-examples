@@ -10,9 +10,9 @@ const client = Client.buildClient({
   domain: 'graphql.myshopify.com'
 });
 
-const initProducts = wrapPromise(client.product.fetchAll());
+const products = wrapPromise(client.product.fetchAll());
 const initCheckout = wrapPromise(client.checkout.create());
-const initShop = wrapPromise(client.shop.fetchInfo());
+const shop = wrapPromise(client.shop.fetchInfo());
 
 function wrapPromise(promise) {
   let status = "pending";
@@ -60,10 +60,8 @@ function Header(props){
 
 function App(props){
 
-  const [products,setProducts] = useState(initProducts);
   const [isCartOpen,setCartOpen] = useState(null);
   const [checkout,setCheckout] = useState(initCheckout);
-  const [shop,setShop] = useState(initShop);
 
   const [startCartTrans, cartIsPending] = useTransition({
     timeoutMs: 3000
@@ -97,7 +95,6 @@ function App(props){
     const lineItemsToUpdate = [{id: lineItemId, quantity: parseInt(quantity, 10)}]
 
     startCartTrans(()=>{
-      //setCartOpen( true );
       setCheckout(wrapPromise(client.checkout.updateLineItems(checkoutId, lineItemsToUpdate)))
     })
   }
@@ -106,7 +103,6 @@ function App(props){
     const checkoutId = checkout.read().id
 
     startCartTrans(()=>{
-      //setCartOpen( true );
       setCheckout(wrapPromise(client.checkout.removeLineItems(checkoutId, [lineItemId])))
     })
   }
