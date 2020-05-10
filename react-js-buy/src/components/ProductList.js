@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, useTransition, Suspense } from "react";
 
 import Product from './Product';
 
@@ -30,6 +30,7 @@ function ProductList(props) {
         addVariantToCart={props.addVariantToCart}
         client={props.client}
         cartIsPending={props.cartIsPending}
+        products={props.products}
       />
     </Suspense>
   );

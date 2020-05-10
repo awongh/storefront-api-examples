@@ -2,20 +2,42 @@ import React from 'react';
 
 import LineItem from './LineItem';
 
+
+// craete a suspense here for the buttons????
+// a wrapper component to trigger the suspense????
+// we need to be able to show the notification here and not suspend the whole component or it wont appear on the page ata ll - it will disappear.
+
 function Cart(props){
 
   const checkout = props.checkout.read();
+
+  console.log(":::::::::::::::::::::::::::::::::::");
+  console.log(":::::::::::::::::::::::::::::::::::");
+  console.log(":::::::::::::::::::::::::::::::::::");
+  console.log(":::::::::::::::::::::::::::::::::::");
+  console.log(":::::::::::::::::::::::::::::::::::");
+  console.log(checkout);
+  console.log(checkout.updateLineItems);
+  console.log(":::::::::::::::::::::::::::::::::::");
+  console.log(":::::::::::::::::::::::::::::::::::");
+  console.log(":::::::::::::::::::::::::::::::::::");
 
   const openCheckout = () => {
     window.open(checkout.webUrl);
   }
 
   let line_items = checkout.lineItems.map((line_item) => {
+    console.log("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU props checkout",props.checkout)
+
     return (
       <LineItem
+        setCheckout={props.setCheckout}
+        checkout={checkout}
+        ff={props.checkout}
         cartIsPending={props.cartIsPending}
         updateQuantityInCart={props.updateQuantityInCart}
         removeLineItemInCart={props.removeLineItemInCart}
+        updateLineItems={props.updateLineItems}
         key={line_item.id.toString()}
         line_item={line_item}
       />
