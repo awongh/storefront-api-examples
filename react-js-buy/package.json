@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "promise-retry": "^1.1.1",
     "react": "0.0.0-experimental-355970aa4",
     "react-dom": "0.0.0-experimental-355970aa4",
     "shopify-buy": "^2.0.1"
   },
   "devDependencies": {
-    "react-scripts": "^3.4.0"
+    "react-scripts": "^3.4.1"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "PORT=3001 react-scripts --max_old_space_size=8128 start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
