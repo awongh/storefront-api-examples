@@ -1,5 +1,6 @@
 function wrapPromise(promise) {
   let status = "pending";
+  let currentErrorMessage = null;
   let result;
   let suspender = promise.then(
     r => {
@@ -19,7 +20,13 @@ function wrapPromise(promise) {
         console.log( suspender );
         throw suspender;
       } else if (status === "error") {
-        throw result;
+        if( result && result.message === 'Failed to fetch' ){
+
+          throw suspender;
+
+        }else{
+          throw result;
+        }
       } else if (status === "success") {
         return result;
       }
@@ -35,6 +42,13 @@ var opts = {
 };
 
 function wrapPromiseRetry(retryCallback){
+
+  // allow for setting state for a promise that will be set later.
+  // but we still need to throw suspender above to keep using suspense
+  if( retryCallback === undefined ){
+    retryCallback = () => Promise.resolve();
+  }
+
   return wrapPromise(retry(retryCallback, opts))
 }
 
@@ -53,6 +67,8 @@ function retry(fn, opts, retriesLeft) {
 
   let [interval,attempt] = timeoutInterval( retriesLeft, opts );
 
+  console.log(`HAHAHAHAHHAHAHAH ${attempt}`);
+  console.log( fn );
   return new Promise((resolve, reject) => {
 
     // to check if the timeout has tripped

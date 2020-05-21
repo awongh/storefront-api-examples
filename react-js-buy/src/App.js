@@ -1,93 +1,166 @@
-import React, { useState, useEffect } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useTransition,
+  Suspense
+} from "react";
 
 import Products from './components/Products';
 import Cart from './components/Cart';
 
+import wrapPromiseRetry from './wrapPromiseRetry'
+
+import Client from 'shopify-buy';
+
+const client = Client.buildClient({
+  storefrontAccessToken: 'dd4d4dc146542ba7763305d71d1b3d38',
+  domain: 'graphql.myshopify.com'
+});
+
+let checkoutId;
+
 function App(props){
 
-  const [products,setProducts] = useState([]);
+
+  const [checkoutPending,setCheckoutPending] = useState(false);
+  const [attempts,setAttempts] = useState(0);
   const [isCartOpen,setCartOpen] = useState(false);
-  const [checkout,setCheckout] = useState({ lineItems: [] });
-  const [shop,setShop] = useState({});
+  const [checkout,setCheckout] = useState(wrapPromiseRetry());
+
+  const [
+    startTransition,
+    isPending
+  ] = useTransition({
+    timeoutMs: 10000
+  });
 
   const cartOpen = () => {
     setCartOpen( true );
   };
 
+  const handleCartClose = () => {
+    setCartOpen( false );
+  }
+
   useEffect(() => {
-    props.client.checkout.create().then((res) => {
-      setCheckout( res );
+
+    const checkoutResource = wrapPromiseRetry(function(attempt, interval){
+      console.log(`attempting: ${attempt} ** interval: ${interval}`);
+      setAttempts( attempt)
+      return client.checkout.create().then((res)=>{
+        console.log( res.id);
+        checkoutId = res.id;
+        return res
+      });
     });
 
-    props.client.product.fetchAll().then((res) => {
-      setProducts( res );
-    });
-
-    props.client.shop.fetchInfo().then((res) => {
-      setShop(res);
-    });
+    setCheckout(checkoutResource);
 
   }, []);
 
   const addVariantToCart = (variantId, quantity) => {
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    console.log(checkoutId);
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
 
+    // open the cart
     setCartOpen( true );
 
-    const lineItemsToAdd = [{variantId, quantity: parseInt(quantity, 10)}]
-    const checkoutId = checkout.id
+    // disable the buttons
+    setCheckoutPending(true);
 
-    return props.client.checkout.addLineItems(checkoutId, lineItemsToAdd).then(res => {
-      setCheckout( res );
+    // format data
+    const lineItemsToAdd = [{variantId, quantity: parseInt(quantity, 10)}]
+
+    const checkoutPromise = wrapPromiseRetry(function(attempt, interval){
+      console.log(`ADD VARIANT attempting: ${attempt} ** interval: ${interval}`);
+      setAttempts( attempt)
+      return client.checkout.addLineItems(checkoutId, lineItemsToAdd).then((res)=>{
+
+        setCheckoutPending(false);
+        return res;
+      })
     });
+
+    setCheckout(checkoutPromise);
+
   }
 
   const updateQuantityInCart = (lineItemId, quantity) => {
-    const checkoutId = checkout.id
+    setCartOpen( true );
+    setCheckoutPending(true);
+
     const lineItemsToUpdate = [{id: lineItemId, quantity: parseInt(quantity, 10)}]
 
-    return props.client.checkout.updateLineItems(checkoutId, lineItemsToUpdate).then(res => {
-      setCheckout( res );
+    const checkoutPromise = wrapPromiseRetry(function(attempt, interval){
+      console.log(`UPDATE CART attempting: ${attempt} ** interval: ${interval}`);
+      setAttempts( attempt)
+      return client.checkout.updateLineItems(checkoutId, lineItemsToUpdate).then(res => {
+        setCheckoutPending(false);
+        return res;
+      });
+
     });
+
+      setCheckout(checkoutPromise);
+
   }
 
   const removeLineItemInCart = (lineItemId) => {
-    const checkoutId = checkout.id
 
-    return props.client.checkout.removeLineItems(checkoutId, [lineItemId]).then(res => {
+    setCartOpen( true );
+    setCheckoutPending(true);
 
-      setCheckout( res );
+    const checkoutPromise = wrapPromiseRetry(function(attempt, interval){
+      console.log(`UPDATE CART attempting: ${attempt} ** interval: ${interval}`);
+      setAttempts( attempt)
+
+      return client.checkout.removeLineItems(checkoutId, [lineItemId]).then(res => {
+        setCheckoutPending(false);
+        return res;
+      });
+
     });
-  }
 
-  const handleCartClose = () => {
-
-    setCartOpen( false );
+    setCheckout(checkoutPromise);
   }
 
   return (
     <div className="App">
         <header className="App__header">
+          <h1>attemptz: {attempts}</h1>
           {!isCartOpen &&
             <div className="App__view-cart-wrapper">
               <button className="App__view-cart" onClick={cartOpen}>Cart</button>
             </div>
           }
           <div className="App__title">
-            <h1>{shop.name}: React Example</h1>
-            <h2>{shop.description}</h2>
+            <h1>React Example</h1>
           </div>
         </header>
-        <Products
-          products={products}
-          client={props.client}
+        <Suspense
+          fallback={<h2>Loading postz...</h2>}
+        >
+          <Cart
+            checkoutPending={checkoutPending}
+            setCheckoutPending={setCheckoutPending}
+            checkout={checkout}
+            isCartOpen={isCartOpen}
+            handleCartClose={handleCartClose}
+            updateQuantityInCart={updateQuantityInCart}
+            removeLineItemInCart={removeLineItemInCart}
+          />
+        </Suspense>
+       <Products
+          checkoutPending={checkoutPending}
+          client={client}
           addVariantToCart={addVariantToCart}
-        />
-        <Cart
-          checkout={checkout}
-          isCartOpen={isCartOpen}
-          handleCartClose={handleCartClose}
-          updateQuantityInCart={updateQuantityInCart}
-          removeLineItemInCart={removeLineItemInCart}
         />
       </div>
   );

@@ -457,3 +457,8 @@ h2 {
   background: #fbefee;
   color: #c23628;
 }
+
+.Cart{
+
+  z-index:9999;
+}

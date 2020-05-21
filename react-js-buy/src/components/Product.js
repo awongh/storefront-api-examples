@@ -30,7 +30,7 @@ function Product(props){
     const target = event.target
     selectedOptions[target.name] = target.value;
 
-    const selectedVariant = props.client.product.helpers.variantForOptions(props.product, selectedOptions)
+    const selectedVariant = props.variantForOptions(props.product, selectedOptions)
 
     setVariant(selectedVariant);
     setVariantImage(selectedVariant.attrs.image);
@@ -58,9 +58,19 @@ function Product(props){
       {variantSelectors}
       <label className="Product__option">
         Quantity
-        <input min="1" type="number" defaultValue={variantQuantity} onChange={handleQuantityChange}></input>
+        <input
+          disabled={props.checkoutPending}
+          min="1"
+          type="number"
+          defaultValue={variantQuantity}
+          onChange={handleQuantityChange}
+        />
       </label>
-      <button className="Product__buy button" onClick={() => props.addVariantToCart(variant.id, variantQuantity)}>Add to Cart</button>
+      <button
+        disabled={props.checkoutPending}
+        className="Product__buy button"
+        onClick={() => props.addVariantToCart(variant.id, variantQuantity)}
+      >Add to Cart</button>
     </div>
   );
 }

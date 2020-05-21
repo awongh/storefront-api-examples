@@ -1,15 +1,33 @@
-import React from 'react';
+import React, {
+  useState,
+  useEffect,
+  useTransition,
+  Suspense
+} from "react";
+
+
 
 function LineItemm(props){
+  const [
+    startTransition,
+    isPending
+  ] = useTransition({
+    timeoutMs: 10000
+  });
 
   const decrementQuantity = (lineItemId) => {
-    const updatedQuantity = props.line_item.quantity - 1
-    props.updateQuantityInCart(lineItemId, updatedQuantity);
+
+    startTransition(()=>{
+      const updatedQuantity = props.line_item.quantity - 1
+      props.updateQuantityInCart(lineItemId, updatedQuantity);
+    });
   }
 
   const incrementQuantity = (lineItemId) => {
+    startTransition(()=>{
     const updatedQuantity = props.line_item.quantity + 1
     props.updateQuantityInCart(lineItemId, updatedQuantity);
+    });
   }
 
   return (

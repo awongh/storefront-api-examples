@@ -1,6 +1,38 @@
-import React from 'react';
+import React, {
+  useState,
+  useEffect,
+  useTransition,
+  Suspense
+} from "react";
+
+
 
 import LineItem from './LineItem';
+
+function LineItemList(props){
+  return (
+    <>
+    {props.checkout.read().lineItems.map((line_item) => {
+      return (
+
+        <Suspense
+          fallback={<h2>HAHAHAHAHAHAHAHAHA...</h2>}
+        >
+        <LineItem
+          updateQuantityInCart={props.updateQuantityInCart}
+          removeLineItemInCart={props.removeLineItemInCart}
+          key={line_item.id.toString()}
+          line_item={line_item}
+        />
+
+        </Suspense>
+      );
+    })}
+    </>
+  );
+}
+
+
 
 function Cart(props){
 
@@ -8,16 +40,7 @@ function Cart(props){
     window.open(props.checkout.webUrl);
   }
 
-  let line_items = props.checkout.lineItems.map((line_item) => {
-    return (
-      <LineItem
-        updateQuantityInCart={props.updateQuantityInCart}
-        removeLineItemInCart={props.removeLineItemInCart}
-        key={line_item.id.toString()}
-        line_item={line_item}
-      />
-    );
-  });
+  //const checkout = props.checkout.read();
 
   return (
     <div className={`Cart ${props.isCartOpen ? 'Cart--open' : ''}`}>
@@ -30,7 +53,15 @@ function Cart(props){
         </button>
       </header>
       <ul className="Cart__line-items">
-        {line_items}
+
+        <Suspense
+          fallback={<h2>Cart Itemsssssss...</h2>}
+        >
+          <LineItemList
+              checkout={props.checkout}
+              updateQuantityInCart={props.updateQuantityInCart}
+          />
+        </Suspense>
       </ul>
       <footer className="Cart__footer">
         <div className="Cart-info clearfix">
