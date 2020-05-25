@@ -5,42 +5,67 @@ import React, {
   Suspense
 } from "react";
 
-
-
 import LineItem from './LineItem';
 
 function LineItemList(props){
-  return (
-    <>
-    {props.checkout.read().lineItems.map((line_item) => {
-      return (
 
-        <Suspense
-          fallback={<h2>HAHAHAHAHAHAHAHAHA...</h2>}
-        >
+  const checkout = props.checkout.read();
+
+  return (<div>
+    {checkout.lineItems.map((lineItem) => {
+      return (
         <LineItem
+          checkoutPending={props.checkoutPending}
           updateQuantityInCart={props.updateQuantityInCart}
           removeLineItemInCart={props.removeLineItemInCart}
-          key={line_item.id.toString()}
-          line_item={line_item}
+          key={lineItem.id.toString()}
+          lineItem={lineItem}
         />
-
-        </Suspense>
       );
     })}
-    </>
-  );
+
+        </div>);
 }
 
+function CheckoutFooter(props){
 
+  const checkout = props.checkout.read();
+
+  const openCheckout = () => {
+    window.open(checkout.webUrl);
+  }
+
+  return (
+      <footer className="Cart__footer">
+        <div className="Cart-info clearfix">
+          <div className="Cart-info__total Cart-info__small">Subtotal</div>
+          <div className="Cart-info__pricing">
+            <span className="pricing">$ {checkout.subtotalPrice}</span>
+          </div>
+        </div>
+        <div className="Cart-info clearfix">
+          <div className="Cart-info__total Cart-info__small">Taxes</div>
+          <div className="Cart-info__pricing">
+            <span className="pricing">$ {checkout.totalTax}</span>
+          </div>
+        </div>
+        <div className="Cart-info clearfix">
+          <div className="Cart-info__total Cart-info__small">Total</div>
+          <div className="Cart-info__pricing">
+            <span className="pricing">$ {checkout.totalPrice}</span>
+          </div>
+        </div>
+        <button
+          className="Cart__checkout button"
+          onClick={openCheckout}
+          disabled={props.checkoutPending}
+        >Checkout</button>
+      </footer>
+  );
+};
 
 function Cart(props){
 
-  const openCheckout = () => {
-    window.open(props.checkout.webUrl);
-  }
-
-  //const checkout = props.checkout.read();
 
   return (
     <div className={`Cart ${props.isCartOpen ? 'Cart--open' : ''}`}>
@@ -55,35 +80,24 @@ function Cart(props){
       <ul className="Cart__line-items">
 
         <Suspense
-          fallback={<h2>Cart Itemsssssss...</h2>}
+          fallback={<h2>CCart Itemsssssss...</h2>}
         >
           <LineItemList
+              checkoutPending={props.checkoutPending}
               checkout={props.checkout}
               updateQuantityInCart={props.updateQuantityInCart}
           />
         </Suspense>
       </ul>
-      <footer className="Cart__footer">
-        <div className="Cart-info clearfix">
-          <div className="Cart-info__total Cart-info__small">Subtotal</div>
-          <div className="Cart-info__pricing">
-            <span className="pricing">$ {props.checkout.subtotalPrice}</span>
-          </div>
-        </div>
-        <div className="Cart-info clearfix">
-          <div className="Cart-info__total Cart-info__small">Taxes</div>
-          <div className="Cart-info__pricing">
-            <span className="pricing">$ {props.checkout.totalTax}</span>
-          </div>
-        </div>
-        <div className="Cart-info clearfix">
-          <div className="Cart-info__total Cart-info__small">Total</div>
-          <div className="Cart-info__pricing">
-            <span className="pricing">$ {props.checkout.totalPrice}</span>
-          </div>
-        </div>
-        <button className="Cart__checkout button" onClick={openCheckout}>Checkout</button>
-      </footer>
+
+        <Suspense
+          fallback={<h2>FOOTERERERERERE...</h2>}
+        >
+      <CheckoutFooter
+        checkoutPending={props.checkoutPending}
+        checkout={props.checkout}
+      />
+        </Suspense>
     </div>
   )
 }

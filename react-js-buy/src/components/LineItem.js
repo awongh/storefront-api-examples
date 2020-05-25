@@ -6,54 +6,63 @@ import React, {
 } from "react";
 
 
-
 function LineItemm(props){
-  const [
-    startTransition,
-    isPending
-  ] = useTransition({
-    timeoutMs: 10000
-  });
 
-  const decrementQuantity = (lineItemId) => {
+  const lineItem = props.lineItem;
 
-    startTransition(()=>{
-      const updatedQuantity = props.line_item.quantity - 1
+  const lineItemId = lineItem.id;
+
+  const removeLineItemInCart = () => {
+      props.removeLineItemInCart(lineItemId);
+  };
+
+  const decrementQuantity = () => {
+      const updatedQuantity = lineItem.quantity - 1
       props.updateQuantityInCart(lineItemId, updatedQuantity);
-    });
   }
 
-  const incrementQuantity = (lineItemId) => {
-    startTransition(()=>{
-    const updatedQuantity = props.line_item.quantity + 1
-    props.updateQuantityInCart(lineItemId, updatedQuantity);
-    });
+  const incrementQuantity = () => {
+
+      const updatedQuantity = lineItem.quantity + 1
+      props.updateQuantityInCart(lineItemId, updatedQuantity);
   }
 
   return (
     <li className="Line-item">
       <div className="Line-item__img">
-        {props.line_item.variant.image ? <img src={props.line_item.variant.image.src} alt={`${props.line_item.title} product shot`}/> : null}
+        {lineItem.variant.image ? <img src={lineItem.variant.image.src} alt={`${lineItem.title} product shot`}/> : null}
       </div>
       <div className="Line-item__content">
         <div className="Line-item__content-row">
           <div className="Line-item__variant-title">
-            {props.line_item.variant.title}
+            {lineItem.variant.title}
           </div>
           <span className="Line-item__title">
-            {props.line_item.title}
+            {lineItem.title}
           </span>
         </div>
         <div className="Line-item__content-row">
           <div className="Line-item__quantity-container">
-            <button className="Line-item__quantity-update" onClick={() => decrementQuantity(props.line_item.id)}>-</button>
-            <span className="Line-item__quantity">{props.line_item.quantity}</span>
-            <button className="Line-item__quantity-update" onClick={() => incrementQuantity(props.line_item.id)}>+</button>
+            <button
+              disabled={props.checkoutPending}
+              className="Line-item__quantity-update"
+              onClick={decrementQuantity}>
+            -</button>
+            <span className="Line-item__quantity">{lineItem.quantity}</span>
+            <button
+              disabled={props.checkoutPending}
+              className="Line-item__quantity-update"
+              onClick={incrementQuantity}>
+            +</button>
           </div>
           <span className="Line-item__price">
-            $ { (props.line_item.quantity * props.line_item.variant.price).toFixed(2) }
+            $ { (lineItem.quantity * lineItem.variant.price).toFixed(2) }
           </span>
-          <button className="Line-item__remove" onClick={()=> props.removeLineItemInCart(props.line_item.id)}>×</button>
+          <button
+            className="Line-item__remove"
+            disabled={props.checkoutPending}
+            onClick={removeLineItemInCart}>
+            ×</button>
         </div>
       </div>
     </li>

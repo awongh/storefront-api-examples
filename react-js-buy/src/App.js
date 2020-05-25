@@ -20,19 +20,17 @@ const client = Client.buildClient({
 let checkoutId;
 
 function App(props){
-
-
-  const [checkoutPending,setCheckoutPending] = useState(false);
-  const [attempts,setAttempts] = useState(0);
-  const [isCartOpen,setCartOpen] = useState(false);
-  const [checkout,setCheckout] = useState(wrapPromiseRetry());
-
   const [
     startTransition,
     isPending
   ] = useTransition({
     timeoutMs: 10000
   });
+
+  const [checkoutPending,setCheckoutPending] = useState(false);
+  const [attempts,setAttempts] = useState(0);
+  const [isCartOpen,setCartOpen] = useState(false);
+  const [checkout,setCheckout] = useState(wrapPromiseRetry());
 
   const cartOpen = () => {
     setCartOpen( true );
@@ -59,43 +57,35 @@ function App(props){
   }, []);
 
   const addVariantToCart = (variantId, quantity) => {
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    console.log(checkoutId);
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
 
-    // open the cart
-    setCartOpen( true );
+      // open the cart
+      setCartOpen( true );
 
-    // disable the buttons
-    setCheckoutPending(true);
+      // disable the buttons
+      setCheckoutPending(true);
 
-    // format data
-    const lineItemsToAdd = [{variantId, quantity: parseInt(quantity, 10)}]
+      // format data
+      const lineItemsToAdd = [{variantId, quantity: parseInt(quantity, 10)}]
 
-    const checkoutPromise = wrapPromiseRetry(function(attempt, interval){
-      console.log(`ADD VARIANT attempting: ${attempt} ** interval: ${interval}`);
-      setAttempts( attempt)
-      return client.checkout.addLineItems(checkoutId, lineItemsToAdd).then((res)=>{
+      const checkoutPromise = wrapPromiseRetry(function(attempt, interval){
+        console.log(`ADD VARIANT attempting: ${attempt} ** interval: ${interval}`);
+        setAttempts( attempt)
+        return client.checkout.addLineItems(checkoutId, lineItemsToAdd).then((res)=>{
 
-        setCheckoutPending(false);
-        return res;
-      })
+          setCheckoutPending(false);
+          return res;
+        })
+      });
+
+     startTransition(() => {
+      setCheckout(checkoutPromise);
     });
-
-    setCheckout(checkoutPromise);
-
   }
 
   const updateQuantityInCart = (lineItemId, quantity) => {
+
     setCartOpen( true );
     setCheckoutPending(true);
-
     const lineItemsToUpdate = [{id: lineItemId, quantity: parseInt(quantity, 10)}]
 
     const checkoutPromise = wrapPromiseRetry(function(attempt, interval){
@@ -108,7 +98,9 @@ function App(props){
 
     });
 
+     startTransition(() => {
       setCheckout(checkoutPromise);
+    });
 
   }
 
@@ -128,7 +120,9 @@ function App(props){
 
     });
 
-    setCheckout(checkoutPromise);
+    startTransition(() => {
+      setCheckout(checkoutPromise);
+    });
   }
 
   return (

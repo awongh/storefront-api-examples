@@ -28,6 +28,7 @@ function wrapPromise(promise) {
           throw result;
         }
       } else if (status === "success") {
+        console.log("RETTURN REEESULT",result)
         return result;
       }
     }
@@ -37,7 +38,7 @@ function wrapPromise(promise) {
 var opts = {
   retries: 10,
   factor: 2,
-  minTimeout: 1 * 1000,
+  minTimeout: 1 * 100000,
   maxTimeout: Infinity,
 };
 
@@ -46,7 +47,7 @@ function wrapPromiseRetry(retryCallback){
   // allow for setting state for a promise that will be set later.
   // but we still need to throw suspender above to keep using suspense
   if( retryCallback === undefined ){
-    retryCallback = () => Promise.resolve();
+    return wrapPromise(Promise.reject())
   }
 
   return wrapPromise(retry(retryCallback, opts))
@@ -67,8 +68,6 @@ function retry(fn, opts, retriesLeft) {
 
   let [interval,attempt] = timeoutInterval( retriesLeft, opts );
 
-  console.log(`HAHAHAHAHHAHAHAH ${attempt}`);
-  console.log( fn );
   return new Promise((resolve, reject) => {
 
     // to check if the timeout has tripped
