@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import { graphql, compose } from 'react-apollo';
+import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 import PropTypes from 'prop-types';
+import {flowRight as compose} from 'lodash';
 
 class CustomerAuth extends Component {
   constructor(props) {
